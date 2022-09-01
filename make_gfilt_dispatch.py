@@ -6,8 +6,8 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     if len(args) == 2:
         max_ref_dim, max_val_dim = args
-        ref_dims = range(1, max_ref_dim+1)
-        val_dims = range(1, max_val_dim+1)
+        ref_dims = range(1, int(max_ref_dim)+1)
+        val_dims = range(1, int(max_val_dim)+1)
     else:
         assert(len(args) == 0)
         ref_dims = [2, 6]

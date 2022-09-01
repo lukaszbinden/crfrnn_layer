@@ -4,6 +4,8 @@ from setuptools import setup
 from torch.utils.cpp_extension import CUDAExtension, BuildExtension
 
 GFILT_CALL = "_call_gfilt_kernels<{ref_dim}, {val_dim}>(values, output, tmp_vals_1, tmp_vals_2, hash_entries, hash_keys, neib_ents, barycentric, valid_entries, n_valid, hash_cap, N, reverse, stream);"
+
+
 def make_gfilt_dispatch_table(fname, ref_dims=range(2, 6), val_dims=range(1, 16)):
     with open(fname, "w") as f:
         f.write("switch(1000 * ref_dim + val_dim) {\n")
@@ -13,14 +15,16 @@ def make_gfilt_dispatch_table(fname, ref_dims=range(2, 6), val_dims=range(1, 16)
                 f.write("\t\t" + GFILT_CALL.format(ref_dim=rdim, val_dim=vdim) + "\n")
                 f.write("\t\tbreak;\n")
         f.write("\tdefault:\n")
-        f.write("\t\tprintf(\"Unsupported ref_dim/val_dim combination (%zd, %zd), generate a new dispatch table using 'make_gfilt_dispatch.py'.\\n\", ref_dim, val_dim);\n")
+        f.write(
+            "\t\tprintf(\"Unsupported ref_dim/val_dim combination (%zd, %zd), generate a new dispatch table using 'make_gfilt_dispatch.py'.\\n\", ref_dim, val_dim);\n")
         f.write("\t\texit(-1);\n")
         f.write("}\n")
 
+
 if __name__ == "__main__":
-    table_fn = "src/gfilt_dispatch_table.h"
-    if not os.path.exists(table_fn) or (os.path.getmtime(table_fn) < os.path.getmtime(__file__)):
-        make_gfilt_dispatch_table(table_fn)
+    # table_fn = "src/gfilt_dispatch_table.h"
+    # if not os.path.exists(table_fn) or (os.path.getmtime(table_fn) < os.path.getmtime(__file__)):
+    #     make_gfilt_dispatch_table(table_fn)
 
     cxx_args = ["-O3", "-fopenmp", "-std=c++14"]
     nvcc_args = ["-O3"]
@@ -29,7 +33,7 @@ if __name__ == "__main__":
 
     setup(
         name="permutohedral",
-        version="0.4",
+        version="0.6",
         description="",
         url="",
         author="Gabriel Schwartz",
@@ -51,4 +55,6 @@ if __name__ == "__main__":
         packages=["permutohedral"],
     )
 
-    setup(name="crfrnn", packages=["crfrnn"])
+    setup(name="crfrnn",
+          version="0.2",
+          packages=["crfrnn"])
